@@ -7,20 +7,27 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ContentView<I: Interactor>: View {
+    @ObservedObject var interactor: I
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        HStack {
+            TextEditor(text: Binding(get: { interactor.typedText }, set: { interactor.updated(text: $0) }))
+            TextEditor(text: Binding(get: { interactor.fileText }, set: { _ in }))
         }
-        .padding()
+        .frame(idealWidth: 2000, idealHeight: 2000)
     }
+}
+
+private class DummyInteractor: Interactor {
+    var typedText: String = "Hello"
+    
+    var fileText: String = "Hello"
+    
+    func updated(text: String) {}
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(interactor: DummyInteractor())
     }
 }

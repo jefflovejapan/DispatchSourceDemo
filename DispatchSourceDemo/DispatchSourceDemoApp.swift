@@ -11,7 +11,8 @@ import SwiftUI
 struct DispatchSourceDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(interactor: try! ConcreteInteractor())
+                .frame(idealWidth: 2000, idealHeight: 2000)
         }
     }
 }
