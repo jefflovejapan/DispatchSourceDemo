@@ -38,9 +38,10 @@ class ConcreteInteractor: Interactor {
         let readHandle = try! FileHandle(forReadingFrom: tempFileURL)
         
         textPassthrough
-            .throttle(for: .milliseconds(500), scheduler: DispatchQueue.main, latest: true)
+//            .throttle(for: .milliseconds(500), scheduler: DispatchQueue.main, latest: true)
             .sink(receiveValue: { text in
                 do {
+//                    try text.write(to: tempFileURL, atomically: true, encoding: .utf8)
                     try writeHandle.truncate(atOffset: 0)
                     try writeHandle.write(contentsOf: text.data(using: .utf8) ?? Data())
                 } catch {
@@ -49,7 +50,7 @@ class ConcreteInteractor: Interactor {
             })
             .store(in: &cancellables)
         
-        self.dispatchSource = DispatchSource.makeFileSystemObjectSource(fileDescriptor: readHandle.fileDescriptor, eventMask: .write, queue: DispatchQueue.main)
+        self.dispatchSource = DispatchSource.makeFileSystemObjectSource(fileDescriptor: readHandle.fileDescriptor, eventMask: .all, queue: DispatchQueue.main)
         self.dispatchSource.setEventHandler(handler: { [weak self] in
             do {
                 try readHandle.seek(toOffset: 0)
